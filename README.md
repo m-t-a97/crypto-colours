@@ -18,7 +18,7 @@ If using Docker on Windows, add `host.docker.internal` as the value of `developm
 
 ## Contracts
 
-Navigate to the `smart-contracts` folder:
+Navigate to the `blockchain` folder:
 
 ```bash
 # Compile contracts
