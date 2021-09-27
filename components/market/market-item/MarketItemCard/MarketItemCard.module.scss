@@ -1,0 +1,28 @@
+.container {
+  @apply flex flex-col justify-center items-center mx-auto rounded-xl bg-white shadow-md hover:shadow-xl;
+  min-width: 40%;
+
+  .header {
+    @apply w-full px-4 py-2 flex flex-row justify-between items-center border border-solid border-gray-300 rounded-tl-xl rounded-tr-xl;
+  }
+
+  .content {
+    @apply w-full p-8;
+
+    .colourCircle {
+      @apply w-12 m-auto p-12 rounded-md border border-solid animate-pulse;
+    }
+  }
+
+  .footer {
+    @apply w-full pt-2 pb-4 border border-solid border-gray-300 rounded-bl-xl rounded-br-xl;
+
+    .infoRow {
+      @apply px-4 flex flex-row justify-between items-center;
+
+      .ethereumIcon {
+        @apply h-5 w-5 mr-1;
+      }
+    }
+  }
+}
