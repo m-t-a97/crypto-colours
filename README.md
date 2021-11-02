@@ -1,18 +1,41 @@
 # Crypto Colours
 
+## Setup
+
+Install the dependencies for the app.
+
+```bash
+yarn install
+```
+
+Then install truffle globally:
+
+```bash
+npm i -g truffle
+```
+
+---
+
 ## Ganache
 
 Use the `Muir Glacier Hard Fork` in Ganache as it was the hard fork version used when developing this app.
 
 ---
 
-## Local Development
+## Running the app
 
-Add `localhost` as the value of `development.host` in the `networks` config in the `truffle-config.js` file to work with Ganache GUI locally.
+Navigate to the `blockchain` folder and do the following running the app:
 
-### Using Docker:
+```bash
+truffle compile --all
+truffle migrate --network development
+```
 
-If using Docker on Windows, add `host.docker.internal` as the value of `development.host` in the `networks` config within `truffle-config.js`. This will allow you to connect from within Docker to the Windows host running Ganache.
+Then navigate back to the root of the project and run:
+
+```bash
+yarn dev
+```
 
 ---
 
@@ -61,5 +84,15 @@ web3.utils.fromWei("25000000000000000", "ether")
 ## MetaMask
 
 To connect your wallet to MetaMask, copy the private key from one of your ganache wallet addresses and then import it into MetaMask. Make sure to switch to the Ganache network to see the Ether in your account's wallet.
+
+---
+
+## Local Development
+
+Add `localhost` as the value of `development.host` in the `networks` config in the `truffle-config.js` file to work with Ganache GUI locally.
+
+### Using Docker:
+
+If using Docker on Windows, add `host.docker.internal` as the value of `development.host` in the `networks` config within `truffle-config.js`. This will allow you to connect from within Docker to the Windows host running Ganache.
 
 ---
