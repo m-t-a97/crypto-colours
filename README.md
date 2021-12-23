@@ -1,5 +1,7 @@
 # Crypto Colours
 
+![crypto-colours-project](https://user-images.githubusercontent.com/54685928/147238636-a881cec5-da8a-4cd4-8380-f64c0708e193.png)
+
 ## Setup
 
 Install the dependencies for the app.
