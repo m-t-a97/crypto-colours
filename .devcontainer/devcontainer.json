@@ -1,0 +1,26 @@
+{
+  "name": "crypto-colours",
+  "build": {
+    "dockerfile": "./Dockerfile"
+  },
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "bash"
+      }
+    }
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "vscode-icons-team.vscode-icons",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "gruntfuggly.todo-tree",
+    "pflannery.vscode-versionlens",
+    "dsznajder.es7-react-js-snippets",
+    "andys8.jest-snippets",
+    "mike-co.import-sorter",
+    "bradlc.vscode-tailwindcss"
+  ],
+  "forwardPorts": [3000]
+}
