@@ -1,6 +1,6 @@
 # Crypto Colours
 
-![crypto-colours-project](https://user-images.githubusercontent.com/54685928/147238636-a881cec5-da8a-4cd4-8380-f64c0708e193.png)
+![image](https://user-images.githubusercontent.com/54685928/148663728-648a62f1-52bd-415b-96b4-4b2f0ba3d590.png)
 
 ## Setup
 
