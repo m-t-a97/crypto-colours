@@ -35,4 +35,8 @@ export class HexColourContractService extends OwnableContractService {
       .approve(addressToApprove, tokenId)
       .send({ from: userAccount });
   }
+
+  public get address(): string {
+    return HEX_COLOUR_CONTRACT_ADDRESS;
+  }
 }

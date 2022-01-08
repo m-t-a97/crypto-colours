@@ -283,5 +283,60 @@ contract("NFTMarketPlace", (accounts) => {
         "expected sold was incorrect."
       );
     });
+
+    it("should test purchasing a token after it is relisted by another user", async () => {
+      const itemPrice = web3.utils.toWei("2", "ether");
+
+      await nftMarketPlaceContract.purchaseMarketItem(1, {
+        from: accounts[2],
+        value: itemPrice,
+      });
+
+      const soldMarketItems =
+        await nftMarketPlaceContract.fetchSoldMarketItems();
+
+      const marketItemPurchased = soldMarketItems[0];
+
+      assert.equal(
+        soldMarketItems.length,
+        1,
+        "The number of expected market items sold was incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.itemId,
+        1,
+        "expected itemId is incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.nftContractAddress,
+        nftContract.address,
+        "expected nftContractAddress is incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.tokenId,
+        1,
+        "expected tokenId is incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.seller,
+        accounts[1],
+        "expected seller of the purchased market item is incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.owner,
+        accounts[2],
+        "expected owner of the purchased market item is incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.price,
+        web3.utils.toWei("2", "ether"),
+        "expected price is incorrect."
+      );
+      assert.equal(
+        marketItemPurchased.sold,
+        true,
+        "expected sold of the purchased market item is incorrect."
+      );
+    });
   });
 });

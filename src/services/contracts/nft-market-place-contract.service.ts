@@ -59,7 +59,7 @@ export class NFTMarketPlaceContractService {
     userAccount: string
   ): Promise<void> {
     return this.contract.methods
-      .relistMarketItem(itemId, newPrice)
+      .relistMarketItem(itemId, toWei(newPrice.toString(), "ether"))
       .send({ from: userAccount, value: await this.getListingFee() });
   }
 
@@ -118,5 +118,9 @@ export class NFTMarketPlaceContractService {
 
   public async getListingFee(): Promise<number> {
     return this.contract.methods.getListingFee().call();
+  }
+
+  public get address(): string {
+    return NFT_MARKET_PLACE_CONTRACT_ADDRESS;
   }
 }

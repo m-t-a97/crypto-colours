@@ -91,7 +91,7 @@ const MintColourForm = () => {
           disabled={isLoading || !isValid}
         >
           {isLoading ? (
-            <CircularProgress />
+            <CircularProgress size={25} />
           ) : (
             <span className="text-black hover:text-white">MINT TOKEN</span>
           )}

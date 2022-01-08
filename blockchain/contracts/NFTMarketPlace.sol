@@ -154,6 +154,8 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     marketItemToRelist.owner = payable(address(0));
     marketItemToRelist.price = newPrice;
     marketItemToRelist.sold = false;
+
+    _idToMarketItem[itemId] = marketItemToRelist;
     
     emit MarketItemRelisted(
       itemId, 

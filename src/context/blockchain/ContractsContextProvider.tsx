@@ -5,7 +5,7 @@ import { NFTMarketPlaceContractService } from '@src/services/contracts/nft-marke
 
 export type ContractsContextType = {
   nftMarketPlaceContractService: NFTMarketPlaceContractService;
-  hexColourService: HexColourContractService;
+  hexColourContractService: HexColourContractService;
 };
 
 export const ContractsContext = createContext<ContractsContextType>(null);
@@ -13,7 +13,7 @@ export const ContractsContext = createContext<ContractsContextType>(null);
 const ContractsContextProvider = ({ children }) => {
   const value: ContractsContextType = {
     nftMarketPlaceContractService: new NFTMarketPlaceContractService(),
-    hexColourService: new HexColourContractService(),
+    hexColourContractService: new HexColourContractService(),
   };
 
   return (

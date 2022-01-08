@@ -12,7 +12,7 @@ const MintColourFormLogic = () => {
   const { account }: WalletAccountType = useWalletAccount();
 
   const {
-    hexColourService,
+    hexColourContractService,
     nftMarketPlaceContractService,
   }: ContractsContextType = useContracts();
 
@@ -23,7 +23,7 @@ const MintColourFormLogic = () => {
       });
     }
 
-    const colourMintedResult: any = await hexColourService.mint(
+    const colourMintedResult: any = await hexColourContractService.mint(
       data.hexColourCode.toUpperCase(),
       account
     );

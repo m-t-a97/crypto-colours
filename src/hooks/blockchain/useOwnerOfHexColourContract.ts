@@ -8,7 +8,7 @@ import useWalletAccount from './useWalletAccount';
 
 const useOwnerOfHexColourContract = () => {
   const { account }: WalletAccountType = useWalletAccount();
-  const { hexColourService }: ContractsContextType = useContracts();
+  const { hexColourContractService }: ContractsContextType = useContracts();
 
   const [isOwner, setIsOwner] = useState<boolean>(false);
 
@@ -18,7 +18,7 @@ const useOwnerOfHexColourContract = () => {
 
   const checkIfOwner = async () => {
     try {
-      const isOwner = await hexColourService.isOwner(account);
+      const isOwner = await hexColourContractService.isOwner(account);
       setIsOwner(isOwner);
     } catch (error) {
       console.error("[Navbar][checkIfOwner]:", error);
