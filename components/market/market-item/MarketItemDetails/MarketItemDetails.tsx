@@ -118,8 +118,8 @@ const MarketItemDetails = ({
 
         {!marketItem.sold && !_.isEqual(account, marketItem.seller) && (
           <div className="mt-2 mb-4">
-            <Button variant="contained" onClick={onBuyToken}>
-              BUY NOW
+            <Button variant="contained" color="primary" onClick={onBuyToken}>
+              <span className="text-black hover:text-white">BUY NOW</span>
             </Button>
           </div>
         )}

@@ -87,10 +87,14 @@ const MintColourForm = () => {
           type="submit"
           variant="contained"
           color="primary"
-          disabled={isLoading || !isValid}
           className="mt-4"
+          disabled={isLoading || !isValid}
         >
-          {isLoading ? <CircularProgress /> : <span>MINT TOKEN</span>}
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <span className="text-black hover:text-white">MINT TOKEN</span>
+          )}
         </Button>
       </form>
     </div>

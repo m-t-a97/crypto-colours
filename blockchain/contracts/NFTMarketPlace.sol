@@ -1,25 +1,23 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "./utils/SafeMath.sol";
-import "./utils/Ownable.sol";
 import "./HexColour.sol";
 
-contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable {
-  using SafeMath for uint256;
+contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable, IERC721ReceiverUpgradeable {
   using Counters for Counters.Counter;
 
   bool private initialized;
 
   Counters.Counter private _itemIds;
 
-  uint private _listingPrice;
+  uint private _listingFee;
 
   struct MarketItem {
     uint itemId;
@@ -53,30 +51,53 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     bool sold 
   );
 
+  event MarketItemRelisted(
+    uint indexed itemId,
+    address indexed nftContractAddress,
+    uint indexed tokenId,
+    address seller, 
+    address owner,
+    uint price,
+    bool sold 
+  );
+
   // Constructor for upgradeable contracts
   function initialize() public initializer {
     __ReentrancyGuard_init();
     __Ownable_init();
     require(!initialized, "Contract instance has already been initialized");
     initialized = true;
-    _listingPrice = 0.005 ether;
+    _listingFee = 0.005 ether;
   }
 
-  function updateListingPrice(uint newListingPrice) public onlyOwner {
-    _listingPrice = newListingPrice;
+  function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+    return this.onERC721Received.selector;
   }
 
-  function getListingPrice() public view returns (uint) {
-    return _listingPrice;
+  function updateListingFee(uint newListingFee) public onlyOwner {
+    _listingFee = newListingFee;
   }
 
-  function createMarketItem(address nftContractAddress, uint tokenId, uint price) public payable nonReentrant {
+  function getListingFee() public view returns (uint) {
+    return _listingFee;
+  }
+
+  modifier onlyIfPriceIsGreaterThanZero(uint price) {
     require(price > 0, "Price must be atleast 1 wei.");
-    require(msg.value == _listingPrice, "You must pay the correct listing price to list a market item.");
+    _;
+  }
 
+  modifier onlyIfListingFeeIsProvided() {
+    require(msg.value == _listingFee, "You must pay the correct listing fee.");
+    _;
+  }
+
+  function createMarketItem(address nftContractAddress, uint tokenId, uint price) public payable nonReentrant onlyIfPriceIsGreaterThanZero(price) onlyIfListingFeeIsProvided {
     _itemIds.increment();
     uint itemId = _itemIds.current();
-    
+
+    IERC721(nftContractAddress).safeTransferFrom(msg.sender, address(this), tokenId);
+
     _idToMarketItem[itemId] = MarketItem(
       itemId,
       nftContractAddress,
@@ -86,9 +107,6 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
       price,
       false
     );
-
-    // Transfers the NFT from the owner to the market place.
-    IERC721(nftContractAddress).transferFrom(msg.sender, address(this), tokenId);
 
     emit MarketItemCreated(
       itemId, 
@@ -101,30 +119,50 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     );
   }
 
-  function purchaseMarketItem(address nftContractAddress, uint itemId) public payable nonReentrant {
+  function purchaseMarketItem(uint itemId) public payable nonReentrant {
     uint price = _idToMarketItem[itemId].price;
     require(msg.value == price, "You must pay the price of the listed item in order to purchase the token.");
 
     MarketItem storage itemToPurchase = _idToMarketItem[itemId];
     uint tokenId = itemToPurchase.tokenId;
 
+    IERC721(itemToPurchase.nftContractAddress).safeTransferFrom(address(this), msg.sender, tokenId);
     itemToPurchase.seller.transfer(msg.value);
-
-    // Transfers the NFT from the market place to the buyer.
-    IERC721(nftContractAddress).transferFrom(address(this), msg.sender, tokenId);
-
     itemToPurchase.owner = payable(msg.sender);
     itemToPurchase.sold = true;
-    payable(owner()).transfer(_listingPrice);
+
+    payable(owner()).transfer(_listingFee);
 
     emit MarketItemPurchased(
       itemId, 
-      nftContractAddress, 
+      itemToPurchase.nftContractAddress, 
       tokenId, 
       itemToPurchase.seller, 
       msg.sender, 
       price, 
       true
+    );
+  }
+
+  function relistMarketItem(uint itemId, uint newPrice) public payable onlyIfPriceIsGreaterThanZero(newPrice) onlyIfListingFeeIsProvided {
+    MarketItem memory marketItemToRelist = fetchMarketItem(itemId);
+    require(marketItemToRelist.sold == true, "This item cannot be relisted as it hasn't been sold yet.");
+
+    IERC721(marketItemToRelist.nftContractAddress).safeTransferFrom(msg.sender, address(this), marketItemToRelist.tokenId);
+
+    marketItemToRelist.seller = payable(msg.sender);
+    marketItemToRelist.owner = payable(address(0));
+    marketItemToRelist.price = newPrice;
+    marketItemToRelist.sold = false;
+    
+    emit MarketItemRelisted(
+      itemId, 
+      marketItemToRelist.nftContractAddress, 
+      marketItemToRelist.tokenId, 
+      marketItemToRelist.seller, 
+      marketItemToRelist.owner, 
+      marketItemToRelist.price, 
+      marketItemToRelist.sold
     );
   }
 
