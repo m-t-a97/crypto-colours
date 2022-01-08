@@ -7,10 +7,13 @@ import { NextRouter, useRouter } from 'next/router';
 
 import HomeLayout from '@components/layouts/HomeLayout';
 import MarketItemDetails from '@components/market/market-item/MarketItemDetails/MarketItemDetails';
+import MarketItemRelistCard from '@components/market/market-item/MarketItemRelistCard/MarketItemRelistCard';
 import MarketItemSummary from '@components/market/market-item/MarketItemSummary/MarketItemSummary';
 
 import { ContractsContextType } from '@src/context/blockchain/ContractsContextProvider';
+import { WalletAccountType } from '@src/context/blockchain/WalletAccountContextProvider';
 import useContracts from '@src/hooks/blockchain/useContracts';
+import useWalletAccount from '@src/hooks/blockchain/useWalletAccount';
 import Colour from '@src/models/Colour.model';
 import MarketItem from '@src/models/MarketItem.model';
 
@@ -20,9 +23,11 @@ const MarketItemPage = () => {
   const router: NextRouter = useRouter();
   const { id } = router.query;
 
+  const { account }: WalletAccountType = useWalletAccount();
+
   const {
     nftMarketPlaceContractService,
-    hexColourService,
+    hexColourContractService,
   }: ContractsContextType = useContracts();
 
   const [isLoadingData, setIsLoadingData] = useState<boolean>(false);
@@ -37,9 +42,10 @@ const MarketItemPage = () => {
         await nftMarketPlaceContractService.fetchMarketItem(
           parseInt(id as string)
         );
+
       setMarketItem(marketItemFetched);
 
-      const marketItemColour = await hexColourService.fetchColour(
+      const marketItemColour = await hexColourContractService.fetchColour(
         marketItemFetched.tokenId
       );
       setColour(marketItemColour);
@@ -48,7 +54,7 @@ const MarketItemPage = () => {
     })();
   }, []);
 
-  const updateMarketItemWhenBought = (updatedMarketItem: MarketItem): void => {
+  const updateMarketItem = (updatedMarketItem: MarketItem): void => {
     setMarketItem((previousState) => ({
       ...previousState,
       ...updatedMarketItem,
@@ -76,8 +82,15 @@ const MarketItemPage = () => {
             <MarketItemDetails
               marketItem={marketItem}
               colour={colour}
-              updateMarketItemWhenBought={updateMarketItemWhenBought}
+              updateMarketItem={updateMarketItem}
             />
+
+            {_.isEqual(account, marketItem.owner) && (
+              <MarketItemRelistCard
+                marketItem={marketItem}
+                updateMarketItem={updateMarketItem}
+              />
+            )}
           </div>
         </div>
       </div>

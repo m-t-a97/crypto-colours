@@ -18,7 +18,7 @@ type MarketItemCardProps = {
 };
 
 const MarketItemCard = ({ marketItem }: MarketItemCardProps) => {
-  const { hexColourService } = useContracts();
+  const { hexColourContractService } = useContracts();
 
   const [colour, setColour] = useState<Colour>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,7 +27,7 @@ const MarketItemCard = ({ marketItem }: MarketItemCardProps) => {
     (async () => {
       setIsLoading(true);
 
-      const colour: Colour = await hexColourService.fetchColour(
+      const colour: Colour = await hexColourContractService.fetchColour(
         marketItem.tokenId
       );
 

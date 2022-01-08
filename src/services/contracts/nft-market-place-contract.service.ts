@@ -28,7 +28,7 @@ export class NFTMarketPlaceContractService {
         tokenId,
         toWei(price.toString(), "ether")
       )
-      .send({ from: userAccount, value: await this.getListingPrice() });
+      .send({ from: userAccount, value: await this.getListingFee() });
   }
 
   public async purchaseMarketItem(
@@ -49,12 +49,18 @@ export class NFTMarketPlaceContractService {
     }
 
     return this.contract.methods
-      .purchaseMarketItem(HEX_COLOUR_CONTRACT_ADDRESS, tokenId)
+      .purchaseMarketItem(tokenId)
       .send({ from: userAccount, value: marketItemToPurchase.price });
   }
 
-  public async getListingPrice(): Promise<number> {
-    return this.contract.methods.getListingPrice().call();
+  public async relistMarketItem(
+    itemId: number,
+    newPrice: number,
+    userAccount: string
+  ): Promise<void> {
+    return this.contract.methods
+      .relistMarketItem(itemId, toWei(newPrice.toString(), "ether"))
+      .send({ from: userAccount, value: await this.getListingFee() });
   }
 
   public async fetchMarketItem(itemId: number): Promise<MarketItem> {
@@ -108,5 +114,13 @@ export class NFTMarketPlaceContractService {
           MarketItemMapper.transform(marketItem)
         )
       );
+  }
+
+  public async getListingFee(): Promise<number> {
+    return this.contract.methods.getListingFee().call();
+  }
+
+  public get address(): string {
+    return NFT_MARKET_PLACE_CONTRACT_ADDRESS;
   }
 }

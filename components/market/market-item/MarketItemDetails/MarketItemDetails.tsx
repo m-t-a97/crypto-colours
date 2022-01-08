@@ -1,4 +1,6 @@
-import { Button } from '@mui/material';
+import { useState } from 'react';
+
+import { Button, CircularProgress } from '@mui/material';
 import classnames from 'classnames';
 import _ from 'lodash';
 import Image from 'next/image';
@@ -18,27 +20,32 @@ import MarketItemDetailsLogic from './MarketItemDetailsLogic';
 type MarketItemDetailsProps = {
   marketItem: MarketItem;
   colour: Colour;
-  updateMarketItemWhenBought: (updatedMarketItem: MarketItem) => void;
+  updateMarketItem: (updatedMarketItem: MarketItem) => void;
 };
 
 const MarketItemDetails = ({
   marketItem,
   colour,
-  updateMarketItemWhenBought,
+  updateMarketItem,
 }: MarketItemDetailsProps) => {
   const { account }: WalletAccountType = useWalletAccount();
 
   const { buyToken } = MarketItemDetailsLogic();
 
+  const [isBuying, setIsBuying] = useState<boolean>(false);
+
   const onBuyToken = async (): Promise<void> => {
     try {
+      setIsBuying(true);
       const purchasedMarketItemResult = await buyToken(marketItem.tokenId);
       const mappedUpdatedMarketItem: MarketItem = MarketItemMapper.transform(
         purchasedMarketItemResult.events.MarketItemPurchased.returnValues
       );
-      updateMarketItemWhenBought(mappedUpdatedMarketItem);
+      updateMarketItem(mappedUpdatedMarketItem);
+      setIsBuying(false);
     } catch (error) {
       console.error("[MarketItemDetails][onBuyToken]:", error);
+      setIsBuying(false);
     }
   };
 
@@ -118,8 +125,17 @@ const MarketItemDetails = ({
 
         {!marketItem.sold && !_.isEqual(account, marketItem.seller) && (
           <div className="mt-2 mb-4">
-            <Button variant="contained" onClick={onBuyToken}>
-              BUY NOW
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={isBuying}
+              onClick={onBuyToken}
+            >
+              {isBuying ? (
+                <CircularProgress size={25} />
+              ) : (
+                <span className="text-black hover:text-white">BUY NOW</span>
+              )}
             </Button>
           </div>
         )}

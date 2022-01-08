@@ -13,7 +13,7 @@ export class Web3Service {
 
         // If Web3 has been injected by the browser (Mist/MetaMask)
         if (!_.isNil(currentWindow.ethereum)) {
-          console.log("[Web3Service][getWeb3]: ✔️ MetaMask is installed!");
+          console.log("[Web3Service][getWeb3]: MetaMask is installed!");
 
           await currentWindow.ethereum.request({
             method: "eth_requestAccounts",
@@ -35,7 +35,7 @@ export class Web3Service {
 
         Web3Service.web3Instance = web3;
       } catch (error) {
-        console.log("[Web3Service][getWeb3]: ❌", error);
+        console.log("[Web3Service][getWeb3]:", error);
 
         reject(error);
       }

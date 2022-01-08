@@ -1,0 +1,23 @@
+.container {
+  @apply w-full mt-4 p-4 flex flex-row justify-center items-center rounded-md bg-white;
+
+  form {
+    @apply flex flex-col justify-center items-center;
+
+    .formTitle {
+      @apply mb-4 text-2xl font-bold text-center;
+    }
+
+    .textFieldContainer {
+      @apply w-auto mb-4 px-4 flex flex-col justify-center items-center;
+
+      .textFieldLabel {
+        @apply mb-4 text-base font-bold;
+      }
+
+      .MuiFormControl-root {
+        @apply w-1/2;
+      }
+    }
+  }
+}

@@ -25,4 +25,18 @@ export class HexColourContractService extends OwnableContractService {
         return ColourMapper.transform(colourData);
       });
   }
+
+  public async approve(
+    addressToApprove: string,
+    tokenId: string,
+    userAccount: string
+  ): Promise<void> {
+    return this.contract.methods
+      .approve(addressToApprove, tokenId)
+      .send({ from: userAccount });
+  }
+
+  public get address(): string {
+    return HEX_COLOUR_CONTRACT_ADDRESS;
+  }
 }
