@@ -88,7 +88,7 @@ const MarketItemRelistCard = ({
                 shouldUnregister: true,
               }}
               render={({ field }) => (
-                <TextField variant="outlined" {...field} />
+                <TextField variant="outlined" className="mb-4" {...field} />
               )}
             />
 
@@ -96,7 +96,6 @@ const MarketItemRelistCard = ({
               type="submit"
               variant="outlined"
               color="primary"
-              className="mt-4"
               disabled={isRelisting || !isValid}
               onClick={handleSubmit(onRelistTokenForSale)}
             >

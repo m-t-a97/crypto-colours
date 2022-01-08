@@ -125,7 +125,12 @@ const MarketItemDetails = ({
 
         {!marketItem.sold && !_.isEqual(account, marketItem.seller) && (
           <div className="mt-2 mb-4">
-            <Button variant="contained" color="primary" onClick={onBuyToken}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={isBuying}
+              onClick={onBuyToken}
+            >
               {isBuying ? (
                 <CircularProgress size={25} />
               ) : (
