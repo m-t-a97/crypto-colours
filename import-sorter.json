@@ -42,6 +42,10 @@
       "orderLevel": 30
     },
     {
+      "regex": "^@blockchain",
+      "orderLevel": 40
+    },
+    {
       "regex": "^@src",
       "orderLevel": 50
     },
