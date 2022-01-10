@@ -1,5 +1,3 @@
-const assert = require("assert");
-
 const HexColour = artifacts.require("HexColour.sol");
 
 contract("HexColour", (accounts) => {
@@ -40,9 +38,7 @@ contract("HexColour", (accounts) => {
       const colour = await contract.colours(0);
       const event = result.logs[0].args;
 
-      // Tests the colour
       assert.equal(colour.hexCode, "FFFFFF", "expected hexCode is incorrect");
-      // Tests the event
       assert.equal(
         event.from,
         "0x0000000000000000000000000000000000000000",

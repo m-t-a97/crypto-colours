@@ -48,10 +48,6 @@ contract HexColour is ERC721Upgradeable, OwnableUpgradeable {
   function mint(string memory hexCode) public onlyIfColourDoesntExist(hexCode) {
     require(bytes(hexCode).length == 6, "The hex colour must be 6 characters in length.");
     
-    _createColour(hexCode);
-  }
-  
-  function _createColour(string memory hexCode) private {
     _idCounter.increment();
     uint id = _idCounter.current();
     colours.push(Colour(id, hexCode));

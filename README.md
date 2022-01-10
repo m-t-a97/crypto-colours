@@ -67,12 +67,11 @@ truffle test
 # Fetching all accounts
 accounts = await web3.eth.getAccounts()
 
-# Deploying a contract manually
+# Grabs a deployed contract
 hexColour = await HexColour.deployed()
 nftMarketPlace = await NFTMarketPlace.deployed()
 
-# Get a reference to the upgradeable contracts via the console during deployment
-# then you can use it in the truffle console.
+# Get a reference to the contracts via their address
 hexColour = await HexColour.at("<address>");
 nftMarketPlace = await NFTMarketPlace.at("<address>");
 
