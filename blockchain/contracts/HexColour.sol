@@ -18,17 +18,14 @@ contract HexColour is ERC721Upgradeable, OwnableUpgradeable {
   Counters.Counter private _idCounter;
   Colour[] public colours;
 
-  address private _marketPlaceContractAddress;
-
   event ColourMinted(uint id, string hexCode);
 
   // Constructor for upgradeable contracts
-  function initialize(address address_) public initializer {
+  function initialize() public initializer {
     __ERC721_init("HexColour", "HEXC");
     __Ownable_init();
     require(!initialized, "Contract instance has already been initialized");
     initialized = true;
-    _marketPlaceContractAddress = address_;
   }
 
   modifier onlyIfColourDoesntExist(string memory hexCode) {
@@ -59,7 +56,6 @@ contract HexColour is ERC721Upgradeable, OwnableUpgradeable {
     uint id = _idCounter.current();
     colours.push(Colour(id, hexCode));
     _safeMint(msg.sender, id);
-    setApprovalForAll(_marketPlaceContractAddress, true);
     emit ColourMinted(id, hexCode);
   }
 }

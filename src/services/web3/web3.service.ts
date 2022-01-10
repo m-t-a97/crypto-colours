@@ -20,7 +20,14 @@ export class Web3Service {
           });
 
           // Use Mist/MetaMask's provider
-          web3 = new Web3(currentWindow.ethereum);
+          if (_.isEqual(process.env.NODE_ENV, "test")) {
+            const provider = new Web3.providers.HttpProvider(
+              process.env.NEXT_PUBLIC_POLYGON_TESTNET
+            );
+            web3 = new Web3(provider);
+          } else if (!_.isEqual(process.env.NODE_ENV, "production")) {
+            web3 = new Web3(currentWindow.ethereum);
+          }
           resolve(web3);
         } else if (!_.isNil(currentWindow.web3)) {
           web3 = currentWindow.web3;

@@ -11,22 +11,8 @@ module.exports = async (deployer) => {
     initializer: "initialize",
   });
 
-  console.log(
-    "nftMarketPlaceProxyContract address:",
-    nftMarketPlaceProxyContract.address
-  );
-
-  const hexColourProxyContract = await deployProxy(
-    HexColour,
-    [nftMarketPlaceProxyContract.address],
-    {
-      deployer,
-      initializer: "initialize",
-    }
-  );
-
-  console.log(
-    "hexColourProxyContract address:",
-    hexColourProxyContract.address
-  );
+  const hexColourProxyContract = await deployProxy(HexColour, {
+    deployer,
+    initializer: "initialize",
+  });
 };
