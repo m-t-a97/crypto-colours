@@ -8,8 +8,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradea
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "./HexColour.sol";
-
 contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable, IERC721ReceiverUpgradeable {
   using Counters for Counters.Counter;
 
