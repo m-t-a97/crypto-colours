@@ -16,29 +16,39 @@ const MintColourFormLogic = () => {
     nftMarketPlaceContractService,
   }: ContractsContextType = useContracts();
 
-  const mintNewToken = async (data: MintColourFormData): Promise<any> => {
-    if (data.price <= 0) {
-      return Promise.reject({
-        message: "The price must be greater than 0 Ether.",
-      });
+  const mintNewToken = async (data: MintColourFormData): Promise<void> => {
+    try {
+      if (data.price <= 0) {
+        return Promise.reject({
+          message: "The price must be greater than 0 Ether.",
+        });
+      }
+
+      const colourMintedResult: any = await hexColourContractService.mint(
+        data.hexColourCode.toUpperCase(),
+        account
+      );
+
+      const colourMintedId: number = parseInt(
+        colourMintedResult.events.ColourMinted.returnValues.id
+      );
+
+      await hexColourContractService.approve(
+        nftMarketPlaceContractService.address,
+        colourMintedId,
+        account
+      );
+
+      await nftMarketPlaceContractService.createMarketItem(
+        colourMintedId,
+        data.price,
+        account
+      );
+
+      return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
     }
-
-    const colourMintedResult: any = await hexColourContractService.mint(
-      data.hexColourCode.toUpperCase(),
-      account
-    );
-
-    const colourMintedId: number = parseInt(
-      colourMintedResult.events.ColourMinted.returnValues.id
-    );
-
-    await nftMarketPlaceContractService.createMarketItem(
-      colourMintedId,
-      data.price,
-      account
-    );
-
-    return Promise.resolve();
   };
 
   return { mintNewToken };

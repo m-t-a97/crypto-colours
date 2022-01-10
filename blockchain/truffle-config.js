@@ -18,10 +18,12 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const {
+  mnemonic,
+  polygonTestnetRpcUrl,
+  deployerAccountAddress,
+} = require("./secrets.json");
 
 module.exports = {
   /**
@@ -45,6 +47,14 @@ module.exports = {
       host: "host.docker.internal", // Localhost (default: none)
       port: 7545, // Standard Ethereum port (default: none)
       network_id: "*", // Any network (default: none)
+    },
+    polygonMumbai: {
+      provider: () => new HDWalletProvider(mnemonic, polygonTestnetRpcUrl),
+      from: deployerAccountAddress,
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
     },
     // Another network with more advanced options...
     // advanced: {
@@ -92,6 +102,7 @@ module.exports = {
       // }
     },
   },
+  plugins: ["truffle-plugin-verify"],
 
   // Truffle DB is currently disabled by default; to enable it, change enabled:
   // false to enabled: true. The default storage location can also be

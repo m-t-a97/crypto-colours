@@ -28,7 +28,7 @@ export class HexColourContractService extends OwnableContractService {
 
   public async approve(
     addressToApprove: string,
-    tokenId: string,
+    tokenId: number,
     userAccount: string
   ): Promise<void> {
     return this.contract.methods

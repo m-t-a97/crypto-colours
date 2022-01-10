@@ -19,7 +19,7 @@ const MarketItemRelistCardLogic = () => {
     try {
       await hexColourContractService.approve(
         nftMarketPlaceContractService.address,
-        marketItem.tokenId.toString(),
+        marketItem.tokenId,
         account
       );
 

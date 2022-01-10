@@ -67,12 +67,11 @@ truffle test
 # Fetching all accounts
 accounts = await web3.eth.getAccounts()
 
-# Deploying a contract manually
+# Grabs a deployed contract
 hexColour = await HexColour.deployed()
 nftMarketPlace = await NFTMarketPlace.deployed()
 
-# Get a reference to the upgradeable contracts via the console during deployment
-# then you can use it in the truffle console.
+# Get a reference to the contracts via their address
 hexColour = await HexColour.at("<address>");
 nftMarketPlace = await NFTMarketPlace.at("<address>");
 
@@ -96,5 +95,28 @@ Add `localhost` as the value of `development.host` in the `networks` config in t
 ### Using Docker:
 
 If using Docker on Windows, add `host.docker.internal` as the value of `development.host` in the `networks` config within `truffle-config.js`. This will allow you to connect from within Docker to the Windows host running Ganache.
+
+---
+
+## Deploying to Testnets
+
+Create a `secrets.json` file and enter the following properties:
+
+```json
+{
+  // this should be your metamask account's seed phrase
+  "mnemonic": "",
+  // the rpc url of the polygon mumbai testnet
+  "polygonTestnetRpcUrl": "",
+  // obtain the deployer address from metamask
+  "deployerAccountAddress": ""
+}
+```
+
+Now you can deploy the smart contracts to your network of choice. In this example we are using the polygon mumbai testnet:
+
+```bash
+truffle migrate --network polygonMumbai
+```
 
 ---

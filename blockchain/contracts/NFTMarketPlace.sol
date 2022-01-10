@@ -96,6 +96,7 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     _itemIds.increment();
     uint itemId = _itemIds.current();
 
+    // Transfer the NFT from the user to the marketplace
     IERC721(nftContractAddress).safeTransferFrom(msg.sender, address(this), tokenId);
 
     _idToMarketItem[itemId] = MarketItem(
@@ -103,7 +104,7 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
       nftContractAddress,
       tokenId,
       payable(msg.sender),
-      payable(address(0)),
+      payable(address(this)),
       price,
       false
     );
@@ -126,7 +127,9 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     MarketItem storage itemToPurchase = _idToMarketItem[itemId];
     uint tokenId = itemToPurchase.tokenId;
 
+    // Transfer the NFT from the marketplace to the buyer
     IERC721(itemToPurchase.nftContractAddress).safeTransferFrom(address(this), msg.sender, tokenId);
+
     itemToPurchase.seller.transfer(msg.value);
     itemToPurchase.owner = payable(msg.sender);
     itemToPurchase.sold = true;
@@ -145,18 +148,16 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
   }
 
   function relistMarketItem(uint itemId, uint newPrice) public payable onlyIfPriceIsGreaterThanZero(newPrice) onlyIfListingFeeIsProvided {
-    MarketItem memory marketItemToRelist = fetchMarketItem(itemId);
+    MarketItem storage marketItemToRelist = _idToMarketItem[itemId];
     require(marketItemToRelist.sold == true, "This item cannot be relisted as it hasn't been sold yet.");
 
     IERC721(marketItemToRelist.nftContractAddress).safeTransferFrom(msg.sender, address(this), marketItemToRelist.tokenId);
 
     marketItemToRelist.seller = payable(msg.sender);
-    marketItemToRelist.owner = payable(address(0));
+    marketItemToRelist.owner = payable(address(this));
     marketItemToRelist.price = newPrice;
     marketItemToRelist.sold = false;
 
-    _idToMarketItem[itemId] = marketItemToRelist;
-    
     emit MarketItemRelisted(
       itemId, 
       marketItemToRelist.nftContractAddress, 
@@ -185,7 +186,7 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     uint unsoldItemCount = 0;
 
     for (uint256 i = 1; i <= totalItemCount; i++) {
-      if (_idToMarketItem[i].owner == address(0)) {
+      if (_idToMarketItem[i].owner == address(this)) {
         unsoldItemCount++;
       }
     }
@@ -194,7 +195,7 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     uint currentIndex = 0;
 
     for (uint256 i = 1; i <= totalItemCount; i++) {
-      if (_idToMarketItem[i].owner == address(0)) {
+      if (_idToMarketItem[i].owner == address(this)) {
         uint currentId = _idToMarketItem[i].itemId;
         MarketItem storage currentItem = _idToMarketItem[currentId];
         unsoldItems[currentIndex] = currentItem;
@@ -211,7 +212,7 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     uint soldItemCount = 0;
 
     for (uint256 i = 1; i <= totalItemCount; i++) {
-      if (_idToMarketItem[i].owner != address(0)) {
+      if (_idToMarketItem[i].owner != address(this)) {
         soldItemCount++;
       }
     }
@@ -220,7 +221,7 @@ contract NFTMarketPlace is Initializable, ReentrancyGuardUpgradeable, OwnableUpg
     uint currentIndex = 0;
 
     for (uint256 i = 1; i <= totalItemCount; i++) {
-      if (_idToMarketItem[i].owner != address(0)) {
+      if (_idToMarketItem[i].owner != address(this)) {
         uint currentId = _idToMarketItem[i].itemId;
         MarketItem storage currentItem = _idToMarketItem[currentId];
         soldItems[currentIndex] = currentItem;

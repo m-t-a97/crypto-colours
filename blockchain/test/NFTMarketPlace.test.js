@@ -1,4 +1,3 @@
-const assert = require("assert");
 const web3 = require("web3");
 
 const NFTMarketPlace = artifacts.require("NFTMarketPlace.sol");
@@ -65,7 +64,7 @@ contract("NFTMarketPlace", (accounts) => {
       const marketItems = await nftMarketPlaceContract.fetchUnsoldMarketItems();
 
       assert.equal(
-        marketItems,
+        marketItems.length,
         0,
         "expected length of market items was incorrect"
       );
@@ -77,6 +76,10 @@ contract("NFTMarketPlace", (accounts) => {
       const newItemPrice = web3.utils.toWei("1", "ether");
       const listingFee = await nftMarketPlaceContract.getListingFee();
 
+      await nftContract.approve(nftMarketPlaceContract.address, 1, {
+        from: accounts[0],
+      });
+
       const marketItemCreatedResult =
         await nftMarketPlaceContract.createMarketItem(
           nftContract.address,
@@ -87,20 +90,17 @@ contract("NFTMarketPlace", (accounts) => {
 
       const marketItems = await nftMarketPlaceContract.fetchUnsoldMarketItems();
 
-      const itemId = marketItemCreatedResult.logs[0].args.itemId;
-      const nftContractAddress =
-        marketItemCreatedResult.logs[0].args.nftContractAddress;
-      const tokenId = marketItemCreatedResult.logs[0].args.tokenId;
-      const seller = marketItemCreatedResult.logs[0].args.seller;
-      const owner = marketItemCreatedResult.logs[0].args.owner;
-      const price = marketItemCreatedResult.logs[0].args.price;
-      const sold = marketItemCreatedResult.logs[0].args.sold;
+      const {
+        itemId,
+        nftContractAddress,
+        tokenId,
+        seller,
+        owner,
+        price,
+        sold,
+      } = marketItemCreatedResult.logs[0].args;
 
-      assert.equal(
-        marketItems.length,
-        1,
-        "expected length of market items was incorrect"
-      );
+      assert.equal(marketItems.length, 1, "market items length was incorrect");
       assert.equal(itemId, 1, "item id was incorrect");
       assert.equal(
         nftContractAddress,
@@ -151,45 +151,45 @@ contract("NFTMarketPlace", (accounts) => {
       const soldMarketItems =
         await nftMarketPlaceContract.fetchSoldMarketItems();
 
-      const marketItemPurchased = soldMarketItems[0];
+      const {
+        itemId,
+        nftContractAddress,
+        tokenId,
+        seller,
+        owner,
+        price,
+        sold,
+      } = soldMarketItems[0];
 
       assert.equal(
         soldMarketItems.length,
         1,
         "The number of expected market items sold was incorrect."
       );
+      assert.equal(itemId, 1, "expected itemId is incorrect.");
       assert.equal(
-        marketItemPurchased.itemId,
-        1,
-        "expected itemId is incorrect."
-      );
-      assert.equal(
-        marketItemPurchased.nftContractAddress,
+        nftContractAddress,
         nftContract.address,
         "expected nftContractAddress is incorrect."
       );
+      assert.equal(tokenId, 1, "expected tokenId is incorrect.");
       assert.equal(
-        marketItemPurchased.tokenId,
-        1,
-        "expected tokenId is incorrect."
-      );
-      assert.equal(
-        marketItemPurchased.seller,
+        seller,
         accounts[0],
         "expected seller of the purchased market item is incorrect."
       );
       assert.equal(
-        marketItemPurchased.owner,
+        owner,
         accounts[1],
         "expected owner of the purchased market item is incorrect."
       );
       assert.equal(
-        marketItemPurchased.price,
+        price,
         web3.utils.toWei("1", "ether"),
         "expected price is incorrect."
       );
       assert.equal(
-        marketItemPurchased.sold,
+        sold,
         true,
         "expected sold of the purchased market item is incorrect."
       );
@@ -245,43 +245,39 @@ contract("NFTMarketPlace", (accounts) => {
         { from: accounts[1], value: listingFee }
       );
 
-      const marketItemRelistedResult = result.logs[0].args;
+      const {
+        itemId,
+        nftContractAddress,
+        tokenId,
+        seller,
+        owner,
+        price,
+        sold,
+      } = result.logs[0].args;
 
+      assert.equal(itemId, 1, "expected itemId was incorrect.");
       assert.equal(
-        marketItemRelistedResult.itemId,
-        1,
-        "expected itemId was incorrect."
-      );
-      assert.equal(
-        marketItemRelistedResult.nftContractAddress,
+        nftContractAddress,
         nftContract.address,
         "expected nftContract address was incorrect."
       );
+      assert.equal(tokenId, 1, "expected tokenId was incorrect.");
       assert.equal(
-        marketItemRelistedResult.tokenId,
-        1,
-        "expected tokenId was incorrect."
-      );
-      assert.equal(
-        marketItemRelistedResult.seller,
+        seller,
         accounts[1],
         "expected seller address was incorrect."
       );
       assert.equal(
-        marketItemRelistedResult.owner,
-        0x0,
+        owner,
+        nftMarketPlaceContract.address,
         "expected owner address was incorrect."
       );
       assert.equal(
-        marketItemRelistedResult.price,
+        price,
         web3.utils.toWei("2", "ether"),
         "expected price was incorrect."
       );
-      assert.equal(
-        marketItemRelistedResult.sold,
-        false,
-        "expected sold was incorrect."
-      );
+      assert.equal(sold, false, "expected sold was incorrect.");
     });
 
     it("should test purchasing a token after it is relisted by another user", async () => {
@@ -295,45 +291,45 @@ contract("NFTMarketPlace", (accounts) => {
       const soldMarketItems =
         await nftMarketPlaceContract.fetchSoldMarketItems();
 
-      const marketItemPurchased = soldMarketItems[0];
+      const {
+        itemId,
+        nftContractAddress,
+        tokenId,
+        seller,
+        owner,
+        price,
+        sold,
+      } = soldMarketItems[0];
 
       assert.equal(
         soldMarketItems.length,
         1,
         "The number of expected market items sold was incorrect."
       );
+      assert.equal(itemId, 1, "expected itemId is incorrect.");
       assert.equal(
-        marketItemPurchased.itemId,
-        1,
-        "expected itemId is incorrect."
-      );
-      assert.equal(
-        marketItemPurchased.nftContractAddress,
+        nftContractAddress,
         nftContract.address,
         "expected nftContractAddress is incorrect."
       );
+      assert.equal(tokenId, 1, "expected tokenId is incorrect.");
       assert.equal(
-        marketItemPurchased.tokenId,
-        1,
-        "expected tokenId is incorrect."
-      );
-      assert.equal(
-        marketItemPurchased.seller,
+        seller,
         accounts[1],
         "expected seller of the purchased market item is incorrect."
       );
       assert.equal(
-        marketItemPurchased.owner,
+        owner,
         accounts[2],
         "expected owner of the purchased market item is incorrect."
       );
       assert.equal(
-        marketItemPurchased.price,
+        price,
         web3.utils.toWei("2", "ether"),
         "expected price is incorrect."
       );
       assert.equal(
-        marketItemPurchased.sold,
+        sold,
         true,
         "expected sold of the purchased market item is incorrect."
       );
